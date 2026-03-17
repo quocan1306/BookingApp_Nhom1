@@ -3,45 +3,80 @@ package com.tranphanquocan.bookingks
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.tranphanquocan.bookingks.ui.theme.BookingKSTheme
+import com.tranphanquocan.bookingks.data.model.Destinations
+import com.tranphanquocan.bookingks.data.model.Hotel
+import com.tranphanquocan.bookingks.ui.screen.home.HomeScreen
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
-            BookingKSTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
+            val hotels = listOf(
+
+                Hotel(
+                    name = "Resort Cam Ranh",
+                    location = "Khánh Hòa",
+                    rating = 9.2,
+                    reviewCount = 120,
+                    tag = "Ưu đãi mùa hè",
+                    oldPrice = "VND 3.200.000",
+                    newPrice = "VND 2.900.000",
+                    image = R.drawable.hotelcard_hotel3
+                ),
+
+                Hotel(
+                    name = "Vinpearl Resort",
+                    location = "Nha Trang",
+                    rating = 9.0,
+                    reviewCount = 540,
+                    tag = "Giảm giá 30%",
+                    oldPrice = "VND 4.000.000",
+                    newPrice = "VND 3.200.000",
+                    image = R.drawable.hotelcard_hotel1
+                ),
+
+                Hotel(
+                    name = "Vinpearl Resort",
+                    location = "Nha Trang",
+                    rating = 9.0,
+                    reviewCount = 540,
+                    tag = "Giảm giá 30%",
+                    oldPrice = "VND 4.000.000",
+                    newPrice = "VND 3.200.000",
+                    image = R.drawable.hotelcard_hotel2
+                )
+
+            )
+
+            val destinations = listOf(
+
+                Destinations(
+                    name = "TP. Hồ Chí Minh",
+                    location = "Hồ Chí Minh",
+                    image = R.drawable.destinationcard_hochiminhcity
+                ),
+
+                Destinations(
+                    name = "Hà Nội",
+                    location = "Hà Nội",
+                    image = R.drawable.destinationcard_hanoi
+                ),
+                Destinations(
+                    name = "Đà Nẵng",
+                    location = "Đà Nẵng",
+                    image = R.drawable.destinationcard_danang
+                )
+
+            )
+
+            HomeScreen(
+                hotels = hotels,
+                destinations = destinations
+            )
+
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BookingKSTheme {
-        Greeting("Android")
     }
 }
