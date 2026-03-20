@@ -2,6 +2,7 @@ package com.tranphanquocan.bookingks.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,29 +21,36 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.tranphanquocan.bookingks.ui.state.UserState
+import com.tranphanquocan.bookingks.ui.theme.AccentBlue
+import com.tranphanquocan.bookingks.ui.theme.ButtonBlue
+import com.tranphanquocan.bookingks.ui.theme.HeaderBlue
+
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
-fun Header() {
-
+fun Header(
+    onLoginClick: () -> Unit
+) {
     Column(
         modifier = Modifier
+            .background(ButtonBlue)
             .fillMaxWidth()
-            .background(Color(0xFF003B95))
+
     ) {
-
-        TopBar()
-
+        TopBar(onLoginClick)
         CategoryTabs()
-
     }
-
 }
 @Composable
 fun SearchItem(
     icon: ImageVector,
     text: String,
-    background: Boolean = false
+    background: Boolean = false,
+    onClick: (() -> Unit)? = null
 ) {
 
     Row(
@@ -50,6 +58,10 @@ fun SearchItem(
             .fillMaxWidth()
             .background(
                 if (background) Color(0xFFF2F2F2) else Color.Transparent
+            )
+            .then(
+                if (onClick != null) Modifier.clickable { onClick() }
+                else Modifier
             )
             .padding(16.dp),
 
@@ -65,8 +77,14 @@ fun SearchItem(
     }
 
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBox() {
+
+    var location by remember { mutableStateOf("") }
+    var dateText by remember { mutableStateOf("Chọn ngày") }
+
+    var showDatePicker by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -79,21 +97,38 @@ fun SearchBox() {
             )
     ) {
 
-        SearchItem(
-            icon = Icons.Default.Search,
-            text = "Đà Lạt",
-
+        //  SEARCH TEXT
+        OutlinedTextField(
+            value = location,
+            onValueChange = { location = it },
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "")
+            },
+            placeholder = {
+                Text(
+                    "Nhập địa điểm bạn muốn đến",
+                    color = Color.Gray
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent
+            )
         )
 
         HorizontalDivider()
 
+        // DATE PICKER
         SearchItem(
             icon = Icons.Default.DateRange,
-            text = "CN, 15 thg 3 - Th 2, 16 thg 3"
+            text = dateText,
+            onClick = { showDatePicker = true }
         )
 
         HorizontalDivider()
 
+        // GUEST
         SearchItem(
             icon = Icons.Default.Person,
             text = "1 phòng · 2 người lớn · 0 trẻ em"
@@ -105,16 +140,44 @@ fun SearchBox() {
                 .fillMaxWidth()
                 .padding(8.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF427BF5)
+                containerColor = ButtonBlue
             )
         ) {
-
             Text("Tìm")
-
         }
-
     }
 
+    // DATE PICKER DIALOG
+    if (showDatePicker) {
+
+        val datePickerState = rememberDatePickerState()
+
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+
+                        val selectedDateMillis = datePickerState.selectedDateMillis
+
+                        if (selectedDateMillis != null) {
+
+                            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                            val formattedDate = sdf.format(Date(selectedDateMillis))
+
+                            dateText = formattedDate
+                        }
+
+                        showDatePicker = false
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        ) {
+            DatePicker(state = datePickerState)
+        }
+    }
 }
 @Composable
 fun TabItem(
@@ -160,7 +223,7 @@ fun CategoryTabs() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
@@ -177,30 +240,59 @@ fun CategoryTabs() {
 }
 
 @Composable
-fun TopBar() {
+fun TopBar(
+    onLoginClick: () -> Unit = {}
+) {
+
+    val isLoggedIn = UserState.isLoggedIn.value
+    val userName = UserState.userName.value
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 15.dp)
             .padding(horizontal = 16.dp, vertical = 16.dp),
-
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
 
-
         Text(
-            text = "Booking.com",
+            text = "Booking_KS",
             color = Color.White,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
 
-        Icon(
-            imageVector = Icons.Default.Notifications,
-            contentDescription = "",
-            tint = Color.White
-        )
+        if (isLoggedIn) {
+            Button(
+                onClick = {},
+                modifier = Modifier
+                    .padding(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AccentBlue
+                )
+            ) {
+                Text(text = "Xin chào, $userName",
+                    color = Color.White,
+                    fontSize = 14.sp)
+            }
 
+        } else {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.width(6.dp))
+                Button(
+                    onClick = {onLoginClick()},
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AccentBlue
+                    )
+                ) {
+                    Text("Đăng nhập",
+                    color = Color.White)
+                }
+            }
+        }
     }
 }

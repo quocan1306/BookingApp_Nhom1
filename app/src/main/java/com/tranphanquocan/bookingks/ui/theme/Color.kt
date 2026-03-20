@@ -2,10 +2,12 @@ package com.tranphanquocan.bookingks.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+val HeaderBlue = Color(0xFF0B2D72)   // header
+val ButtonBlue = Color(0xFF0992C2)   // button
+val AccentBlue  = Color(0xFF0AC4E0)   // highlight
+val BackgroundCream = Color(0xFFF6E7BC) // background
+val PrimaryBlue = Color(0xFF003B95)
+val BorderYellow = Color(0xFFFFB700)
+val LightGray = Color(0xFFF2F2F2)
+val TextGray = Color(0xFF666666)

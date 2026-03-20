@@ -1,5 +1,6 @@
 package com.tranphanquocan.bookingks.ui.components
 
+import android.text.Highlights
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +28,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tranphanquocan.bookingks.data.model.Hotel
-
+import com.tranphanquocan.bookingks.ui.theme.AccentBlue
 
 
 @Composable
@@ -74,7 +75,7 @@ fun HotelCard(hotel: Hotel) {
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0xFF3399FF))
+                            .background(AccentBlue)
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
                         Text(
