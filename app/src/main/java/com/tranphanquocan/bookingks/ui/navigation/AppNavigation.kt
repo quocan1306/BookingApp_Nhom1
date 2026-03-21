@@ -1,6 +1,7 @@
 package com.tranphanquocan.bookingks.ui.navigation
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -10,11 +11,13 @@ import com.tranphanquocan.bookingks.data.model.Hotel
 import com.tranphanquocan.bookingks.ui.screen.home.HomeScreen
 import com.tranphanquocan.bookingks.ui.screen.login.LoginScreen
 import com.tranphanquocan.bookingks.ui.screen.register.RegisterScreen
+import com.tranphanquocan.bookingks.viewmodel.AuthViewModel
 
 @Composable
 fun AppNavigation() {
 
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = viewModel()
 
     NavHost(
         navController = navController,
@@ -25,13 +28,13 @@ fun AppNavigation() {
 
         // LOGIN
         composable("login") {
+            //khoi tao bien chay
             LoginScreen(
-                onNavigateToRegister = {
-                    navController.navigate("register")
-                },
-                onLoginSuccess = {
-                    navController.navigate("home")
-                }
+//                onNavigateToRegister = {
+//                    navController.navigate("register")
+//                },
+                navController = navController,
+                viewModel = authViewModel
             )
         }
 
@@ -106,7 +109,8 @@ fun AppNavigation() {
             HomeScreen(
                 hotels = hotels,
                 destinations = destinations,
-                navController = navController
+                navController = navController,
+                viewModel = authViewModel
             )
         }
     }
