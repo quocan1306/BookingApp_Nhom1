@@ -1,5 +1,4 @@
 package com.tranphanquocan.bookingks.ui.navigation
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,7 +8,9 @@ import com.tranphanquocan.bookingks.data.model.Destinations
 import com.tranphanquocan.bookingks.data.model.Hotel
 import com.tranphanquocan.bookingks.ui.screen.home.HomeScreen
 import com.tranphanquocan.bookingks.ui.screen.login.LoginScreen
+import com.tranphanquocan.bookingks.ui.screen.profile.PersonalInfoScreen
 import com.tranphanquocan.bookingks.ui.screen.register.RegisterScreen
+import com.tranphanquocan.bookingks.ui.screen.profile.ProfileScreen
 
 @Composable
 fun AppNavigation() {
@@ -31,6 +32,9 @@ fun AppNavigation() {
                 },
                 onLoginSuccess = {
                     navController.navigate("home")
+                },
+                onBackToHome = {
+                    navController.navigate("home")
                 }
             )
         }
@@ -40,6 +44,9 @@ fun AppNavigation() {
             RegisterScreen(
                 onBackToLogin = {
                     navController.popBackStack()
+                },
+                onBackToHome = {
+                    navController.navigate("home")
                 }
             )
         }
@@ -103,11 +110,31 @@ fun AppNavigation() {
                 )
 
             )
+
             HomeScreen(
                 hotels = hotels,
                 destinations = destinations,
                 navController = navController
             )
         }
+        // PROFILE
+        composable("profile") {
+            ProfileScreen(
+                navController= navController,
+                onLogout = {
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                },
+                onLoginClick = {
+                    navController.navigate("login")
+                }
+            )
+        }
+
+        composable("personal_info") {
+            PersonalInfoScreen(navController = navController)
+        }
+
     }
 }

@@ -1,49 +1,61 @@
 package com.tranphanquocan.bookingks.ui.components
 
+// 🔹 IMPORT
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Luggage
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(
+    navController: NavController
+) {
 
-    var selectedItem by remember { mutableStateOf(0) }
+    // 🔥 Lấy route hiện tại
+    val backStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = backStackEntry.value?.destination?.route
 
     NavigationBar {
 
+        // 🏠 HOME
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "") },
             label = { Text("Trang chủ") },
-            selected = selectedItem == 0,
-            onClick = { selectedItem = 0 }
+            selected = currentRoute == "home",
+            onClick = {
+                navController.navigate("home") {
+                    popUpTo("home")
+                    launchSingleTop = true
+                }
+            }
         )
 
+        // 🎒 TRIP
         NavigationBarItem(
             icon = { Icon(Icons.Default.Luggage, contentDescription = "") },
             label = { Text("Chuyến đi") },
-            selected = selectedItem == 2,
-            onClick = { selectedItem = 2 }
+            selected = currentRoute == "trip",
+            onClick = {
+                navController.navigate("trip") {
+                    launchSingleTop = true
+                }
+            }
         )
 
+        // 👤 PROFILE
         NavigationBarItem(
             icon = { Icon(Icons.Default.Person, contentDescription = "") },
             label = { Text("Tài khoản") },
-            selected = selectedItem == 4,
-            onClick = { selectedItem = 4 }
+            selected = currentRoute == "profile",
+            onClick = {
+                navController.navigate("profile") {
+                    launchSingleTop = true
+                }
+            }
         )
-
     }
 }

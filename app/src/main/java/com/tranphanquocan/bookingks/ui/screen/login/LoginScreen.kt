@@ -18,14 +18,11 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-
 @Composable
 fun LoginScreen(
     onNavigateToRegister: () -> Unit,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: () -> Unit,
+    onBackToHome: () -> Unit
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -113,6 +110,15 @@ fun LoginScreen(
                 }
             )
         }
+        Text(
+            text = "← Quay lại trang chủ",
+            color = Color.Yellow,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .clickable {
+                    onBackToHome()
+                }
+        )
 
     }
 

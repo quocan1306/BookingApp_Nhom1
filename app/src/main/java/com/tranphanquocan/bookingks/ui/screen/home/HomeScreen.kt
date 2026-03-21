@@ -1,10 +1,11 @@
 package com.tranphanquocan.bookingks.ui.screen.home
 
 import DestinationCard
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -16,11 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
 import com.tranphanquocan.bookingks.data.model.Destinations
 import com.tranphanquocan.bookingks.data.model.Hotel
 import com.tranphanquocan.bookingks.ui.components.BottomNavigationBar
@@ -35,91 +34,96 @@ fun HomeScreen(
     destinations: List<Destinations>,
     navController: NavController
 ) {
-
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
-        bottomBar = {
-            BottomNavigationBar()
-        }
-    ) { padding ->
-
-        Column(
-            modifier = Modifier.padding(
-                start = padding.calculateStartPadding(LayoutDirection.Ltr),
-                end = padding.calculateEndPadding(LayoutDirection.Ltr),
-                bottom = padding.calculateBottomPadding()
-            )
-        ) {
-
-            // HEADER (TopBar + Tabs) - FIXED
+        topBar = {
             Header(
                 onLoginClick = {
                     navController.navigate("login")
                 }
             )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
+        }
+    ) { innerPadding ->
 
-            // CONTENT SCROLL
-            LazyColumn {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
 
-                // SEARCH BOX SECTION (SCROLL)
-                item {
-                    SearchBox()
-                }
+            item {
+                SearchBox()
+            }
 
-                // SECTION ƯU ĐÃI
-                item {
-                    Text(
-                        text = "Ưu đãi",
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
+            item {
+                SectionTitle(
+                    title = "Ưu đãi",
+                    subtitle = "Ưu đãi dành cho bạn"
+                )
+            }
 
-                    Text(
-                        text = "Ưu đãi dành cho bạn",
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
-
-                item {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 12.dp)
-                    ) {
-                        items(hotels) {
-                            HotelCard(it)
-                        }
-                    }
-                }
-
-                // SECTION DU KHÁCH ĐÃ ĐẶT
-                item {
-                    Text(
-                        text = "Du khách cũng đã đặt",
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-
-                    Text(
-                        text = "Thêm gợi ý cho chuyến đi của bạn trong khoảng thời gian ngày 20 tháng 3 – ngày 22 tháng 3",
-                        fontSize = 14.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
-                }
-
-                item {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 12.dp)
-                    ) {
-
-                        items(destinations) { destination ->
-                            DestinationCard(destination)
-                        }
-
+            item {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(hotels) { hotel ->
+                        HotelCard(hotel)
                     }
                 }
             }
+
+            item {
+                SectionTitle(
+                    title = "Du khách cũng đã đặt",
+                    subtitle = "Thêm gợi ý cho chuyến đi của bạn trong khoảng thời gian ngày 20 tháng 3 – ngày 22 tháng 3"
+                )
+            }
+
+            item {
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(destinations) { destination ->
+                        DestinationCard(destination)
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
         }
+    }
+}
+
+@Composable
+fun SectionTitle(
+    title: String,
+    subtitle: String
+) {
+    androidx.compose.foundation.layout.Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Text(
+            text = title,
+            fontSize = 22.sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Text(
+            text = subtitle,
+            fontSize = 14.sp,
+            color = Color.Gray
+        )
     }
 }
