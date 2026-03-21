@@ -1,6 +1,7 @@
 package com.tranphanquocan.bookingks.ui.screen.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,18 +18,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Logout
+
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +42,7 @@ import androidx.navigation.NavController
 import com.tranphanquocan.bookingks.ui.components.BottomNavigationBar
 import com.tranphanquocan.bookingks.ui.components.ProfileItem
 import com.tranphanquocan.bookingks.ui.components.SectionTitle
+import com.tranphanquocan.bookingks.ui.state.UserState
 import com.tranphanquocan.bookingks.ui.theme.AccentBlue
 import com.tranphanquocan.bookingks.ui.theme.ButtonBlue
 import com.tranphanquocan.bookingks.ui.theme.LightGray
@@ -124,6 +128,29 @@ fun ProfileScreen(
             }
 
             item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            item {
+                ProfileItem(
+                    title = "Đăng xuất",
+                    icon = Icons.AutoMirrored.Outlined.Logout,
+                    textColor = Color.Red,
+                    iconColor = Color.Red,
+                    showArrow = false,
+                    onClick = {
+                        UserState.isLoggedIn.value = false
+                        UserState.userName.value = ""
+
+                        navController.navigate("home") {
+                            popUpTo(0)
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+
+            item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -160,7 +187,7 @@ private fun ProfileHeader(
 
         Text(
             text = "Hồ sơ cá nhân",
-            style = MaterialTheme.typography.titleLarge,
+            style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
             color = Color.White
         )
 
@@ -168,7 +195,7 @@ private fun ProfileHeader(
 
         Text(
             text = "Đăng nhập để quản lý tài khoản, phương thức thanh toán và giao dịch của bạn",
-            style = MaterialTheme.typography.bodyMedium,
+            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
             color = Color.White.copy(alpha = 0.95f)
         )
 
