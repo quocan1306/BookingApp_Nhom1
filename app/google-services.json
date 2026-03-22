@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "466692026843",
+    "project_id": "appfirebase-ef984",
+    "storage_bucket": "appfirebase-ef984.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466692026843:android:0ff4c5d239acadf63377fe",
+        "android_client_info": {
+          "package_name": "com.tranphanquocan.bookingks"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjuGvof6lnOmSiJ7sysWVeI0UeGB2PBfY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
