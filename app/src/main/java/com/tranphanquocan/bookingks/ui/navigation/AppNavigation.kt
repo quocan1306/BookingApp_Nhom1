@@ -1,5 +1,4 @@
 package com.tranphanquocan.bookingks.ui.navigation
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -10,8 +9,10 @@ import com.tranphanquocan.bookingks.data.model.Destinations
 import com.tranphanquocan.bookingks.data.model.Hotel
 import com.tranphanquocan.bookingks.ui.screen.home.HomeScreen
 import com.tranphanquocan.bookingks.ui.screen.login.LoginScreen
+import com.tranphanquocan.bookingks.ui.screen.profile.PersonalInfoScreen
 import com.tranphanquocan.bookingks.ui.screen.register.RegisterScreen
 import com.tranphanquocan.bookingks.viewmodel.AuthViewModel
+import com.tranphanquocan.bookingks.ui.screen.profile.ProfileScreen
 
 @Composable
 fun AppNavigation() {
@@ -35,6 +36,9 @@ fun AppNavigation() {
 //                },
                 navController = navController,
                 viewModel = authViewModel
+                onBackToHome = {
+                    navController.navigate("home")
+                }
             )
         }
 
@@ -43,6 +47,9 @@ fun AppNavigation() {
             RegisterScreen(
                 onBackToLogin = {
                     navController.popBackStack()
+                },
+                onBackToHome = {
+                    navController.navigate("home")
                 }
             )
         }
@@ -106,6 +113,7 @@ fun AppNavigation() {
                 )
 
             )
+
             HomeScreen(
                 hotels = hotels,
                 destinations = destinations,
@@ -113,5 +121,24 @@ fun AppNavigation() {
                 viewModel = authViewModel
             )
         }
+        // PROFILE
+        composable("profile") {
+            ProfileScreen(
+                navController= navController,
+                onLogout = {
+                    navController.navigate("login") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                },
+                onLoginClick = {
+                    navController.navigate("login")
+                }
+            )
+        }
+
+        composable("personal_info") {
+            PersonalInfoScreen(navController = navController)
+        }
+
     }
 }

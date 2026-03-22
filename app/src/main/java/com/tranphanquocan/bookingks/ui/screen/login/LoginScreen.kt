@@ -31,6 +31,7 @@ fun LoginScreen(
 //    onLoginSuccess: () -> Unit,
     navController: NavController,
     viewModel: AuthViewModel
+    onBackToHome: () -> Unit
 ) {
 
     var email by remember { mutableStateOf("") }
@@ -125,6 +126,15 @@ fun LoginScreen(
                 }
             )
         }
+        Text(
+            text = "← Quay lại trang chủ",
+            color = Color.Yellow,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .clickable {
+                    onBackToHome()
+                }
+        )
 
     }
 

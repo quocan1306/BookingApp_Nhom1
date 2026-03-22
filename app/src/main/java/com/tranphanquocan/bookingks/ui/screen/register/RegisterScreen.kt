@@ -25,7 +25,9 @@ import com.tranphanquocan.bookingks.ui.state.UserState
 
 @Composable
 fun RegisterScreen(
-    onBackToLogin: () -> Unit
+    onBackToLogin: () -> Unit,
+    onBackToHome: () -> Unit
+
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -111,6 +113,7 @@ fun RegisterScreen(
             ) {
                 Text("Đăng ký")
             }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -121,6 +124,15 @@ fun RegisterScreen(
             modifier = Modifier.clickable {
                 onBackToLogin()
             }
+        )
+        Text(
+            text = "← Quay lại trang chủ",
+            color = Color.Yellow,
+            modifier = Modifier
+                .padding(top = 16.dp)
+                .clickable {
+                    onBackToHome()
+                }
         )
     }
 }
