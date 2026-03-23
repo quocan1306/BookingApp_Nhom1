@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -32,6 +34,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -161,56 +164,98 @@ fun ProfileScreen(
 private fun ProfileHeader(
     onLoginClick: () -> Unit
 ) {
+    val isLoggedIn = UserState.isLoggedIn.value
+    val userName = UserState.userName.value
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(ButtonBlue)
             .statusBarsPadding()
-            .padding(horizontal = 20.dp, vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .size(92.dp)
-                .background(Color.White.copy(alpha = 0.2f), CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.AccountCircle,
-                contentDescription = "Avatar",
-                tint = Color.White,
-                modifier = Modifier.size(64.dp)
-            )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        if (isLoggedIn) {
+            // đã đăng nhập
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(Color.White.copy(alpha = 0.2f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.AccountCircle,
+                        contentDescription = "Avatar",
+                        tint = Color.White,
+                        modifier = Modifier.size(40.dp)
+                    )
+                }
 
-        Text(
-            text = "Hồ sơ cá nhân",
-            style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
-            color = Color.White
-        )
+                Spacer(modifier = Modifier.width(16.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
+                Column {
+                    Text(
+                        text = "Chào $userName",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
 
-        Text(
-            text = "Đăng nhập để quản lý tài khoản, phương thức thanh toán và giao dịch của bạn",
-            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.95f)
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
 
-        Button(
-            onClick = onLoginClick,
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = AccentBlue,
-                contentColor = Color.White
-            ),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Text(text = "Đăng nhập hoặc đăng ký")
+        } else {
+            // chưa đăng nhập
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(92.dp)
+                        .background(Color.White.copy(alpha = 0.2f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.AccountCircle,
+                        contentDescription = "Avatar",
+                        tint = Color.White,
+                        modifier = Modifier.size(64.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Hồ sơ cá nhân",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = Color.White
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Đăng nhập để quản lý tài khoản, phương thức thanh toán và giao dịch của bạn",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White.copy(alpha = 0.95f)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onLoginClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AccentBlue,
+                        contentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Đăng nhập hoặc đăng ký")
+                }
+            }
         }
     }
 }

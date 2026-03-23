@@ -1,25 +1,28 @@
 package com.tranphanquocan.bookingks.ui.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Bed
 import androidx.compose.material.icons.filled.Close
@@ -27,22 +30,19 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -65,9 +65,10 @@ import com.tranphanquocan.bookingks.ui.state.UserState
 import com.tranphanquocan.bookingks.ui.theme.AccentBlue
 import com.tranphanquocan.bookingks.ui.theme.BorderYellow
 import com.tranphanquocan.bookingks.ui.theme.ButtonBlue
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.YearMonth
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun Header(
@@ -112,16 +113,18 @@ fun SearchItem(
 @Composable
 fun SearchBox() {
     var location by remember { mutableStateOf("") }
+
     var dateText by remember { mutableStateOf("Chọn ngày") }
     var showDatePicker by remember { mutableStateOf(false) }
-    var showGuestSheet by remember { mutableStateOf(false) }
+    var checkInDate by remember { mutableStateOf<LocalDate?>(null) }
+    var checkOutDate by remember { mutableStateOf<LocalDate?>(null) }
 
+    var showGuestSheet by remember { mutableStateOf(false) }
     var rooms by remember { mutableIntStateOf(1) }
     var adults by remember { mutableIntStateOf(2) }
     var children by remember { mutableIntStateOf(0) }
 
     val childAges = remember { mutableStateListOf<String>() }
-
     var showAgeDialog by remember { mutableStateOf(false) }
     var editingChildIndex by remember { mutableIntStateOf(-1) }
 
@@ -199,36 +202,32 @@ fun SearchBox() {
             Text("Tìm")
         }
     }
-//show lịch
-    if (showDatePicker) {
-        val datePickerState = rememberDatePickerState()
 
-        DatePickerDialog(
+    if (showDatePicker) {
+        ModalBottomSheet(
             onDismissRequest = { showDatePicker = false },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val selectedDateMillis = datePickerState.selectedDateMillis
-                        if (selectedDateMillis != null) {
-                            val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                            dateText = sdf.format(Date(selectedDateMillis))
-                        }
-                        showDatePicker = false
-                    }
-                ) {
-                    Text("OK")
-                }
-            }
+            modifier = Modifier.navigationBarsPadding()
         ) {
-            DatePicker(state = datePickerState)
+
+            DateRangeBottomSheet(
+                initialCheckIn = checkInDate,
+                initialCheckOut = checkOutDate,
+                onApply = { startDate, endDate ->
+                    checkInDate = startDate
+                    checkOutDate = endDate
+                    dateText = formatDateRange(startDate, endDate)
+                    showDatePicker = false
+                },
+                onClose = {
+                    showDatePicker = false
+                }
+            )
         }
     }
 
-    //show khách
     if (showGuestSheet) {
         ModalBottomSheet(
             onDismissRequest = { showGuestSheet = false },
-
             modifier = Modifier.navigationBarsPadding()
         ) {
             LazyColumn(
@@ -395,7 +394,214 @@ fun SearchBox() {
     }
 }
 
-//số lượng khách, phòng và trẻ em
+@SuppressLint("NewApi")
+@Composable
+private fun DateRangeBottomSheet(
+    initialCheckIn: LocalDate?,
+    initialCheckOut: LocalDate?,
+    onApply: (LocalDate, LocalDate) -> Unit,
+    onClose: () -> Unit
+) {
+    var currentMonth by remember { mutableStateOf(YearMonth.now()) }
+    var tempCheckIn by remember { mutableStateOf(initialCheckIn) }
+    var tempCheckOut by remember { mutableStateOf(initialCheckOut) }
+
+    val daysOfWeek = listOf("Th 2", "Th 3", "Th 4", "Th 5", "Th 6", "Th 7", "CN")
+    val dates = remember(currentMonth) { buildCalendarDays(currentMonth) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+    ) {
+
+        Text(
+            text = "Chọn",
+            fontSize = 28.sp,
+            color = Color.Black,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            daysOfWeek.forEach { day ->
+                Text(
+                    text = day,
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(7),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(320.dp)
+                .padding(horizontal = 8.dp),
+            userScrollEnabled = false
+        ) {
+            items(dates) { date ->
+                CalendarDayItem(
+                    date = date,
+                    checkInDate = tempCheckIn,
+                    checkOutDate = tempCheckOut,
+                    onDateClick = { clickedDate ->
+                        when {
+                            tempCheckIn == null -> {
+                                tempCheckIn = clickedDate
+                            }
+
+                            tempCheckOut == null && clickedDate.isAfter(tempCheckIn) -> {
+                                tempCheckOut = clickedDate
+                            }
+
+                            tempCheckOut == null && clickedDate.isEqual(tempCheckIn) -> {
+                                tempCheckOut = clickedDate.plusDays(1)
+                            }
+
+                            else -> {
+                                tempCheckIn = clickedDate
+                                tempCheckOut = null
+                            }
+                        }
+                    }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = when {
+                tempCheckIn != null && tempCheckOut != null ->
+                    "${formatShortDate(tempCheckIn!!)} - ${formatShortDate(tempCheckOut!!)} (${ChronoUnit.DAYS.between(tempCheckIn, tempCheckOut)} đêm)"
+                tempCheckIn != null ->
+                    "Đã chọn ngày nhận phòng: ${formatShortDate(tempCheckIn!!)}"
+                else -> "Chọn ngày nhận và trả phòng"
+            },
+            fontSize = 16.sp,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = {
+                if (tempCheckIn != null && tempCheckOut != null) {
+                    onApply(tempCheckIn!!, tempCheckOut!!)
+                }
+            },
+            enabled = tempCheckIn != null && tempCheckOut != null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .height(52.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AccentBlue
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(
+                text = "Chọn ngày",
+                color = Color.White,
+                fontSize = 18.sp
+            )
+        }
+    }
+}
+
+@Composable
+private fun CalendarDayItem(
+    date: LocalDate?,
+    checkInDate: LocalDate?,
+    checkOutDate: LocalDate?,
+    onDateClick: (LocalDate) -> Unit
+) {
+    if (date == null) {
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .padding(2.dp)
+        )
+        return
+    }
+
+    val isStart = checkInDate != null && date.isEqual(checkInDate)
+    val isEnd = checkOutDate != null && date.isEqual(checkOutDate)
+    val isInRange = checkInDate != null && checkOutDate != null &&
+            date.isAfter(checkInDate) && date.isBefore(checkOutDate)
+
+    val bgColor = when {
+        isStart || isEnd -> AccentBlue
+        isInRange -> AccentBlue.copy(alpha = 0.2f)
+        else -> Color.Transparent
+    }
+
+    val textColor = when {
+        isStart || isEnd -> Color.White
+        else -> Color.Black
+    }
+
+    Box(
+        modifier = Modifier
+            .size(44.dp)
+            .padding(2.dp)
+            .background(bgColor, RoundedCornerShape(4.dp))
+            .clickable { onDateClick(date) },
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = date.dayOfMonth.toString(),
+            color = textColor,
+            fontSize = 18.sp
+        )
+    }
+}
+
+private fun buildCalendarDays(month: YearMonth): List<LocalDate?> {
+    val firstDay = month.atDay(1)
+    val daysInMonth = month.lengthOfMonth()
+
+    val startOffset = when (firstDay.dayOfWeek) {
+        DayOfWeek.MONDAY -> 0
+        DayOfWeek.TUESDAY -> 1
+        DayOfWeek.WEDNESDAY -> 2
+        DayOfWeek.THURSDAY -> 3
+        DayOfWeek.FRIDAY -> 4
+        DayOfWeek.SATURDAY -> 5
+        DayOfWeek.SUNDAY -> 6
+    }
+
+    val result = mutableListOf<LocalDate?>()
+
+    repeat(startOffset) {
+        result.add(null)
+    }
+
+    for (day in 1..daysInMonth) {
+        result.add(month.atDay(day))
+    }
+
+    return result
+}
+
+private fun formatShortDate(date: LocalDate): String {
+    return "${date.dayOfMonth} thg ${date.monthValue}"
+}
+
+private fun formatDateRange(checkIn: LocalDate, checkOut: LocalDate): String {
+    return "${formatShortDate(checkIn)} - ${formatShortDate(checkOut)}"
+}
+
 @Composable
 private fun GuestCounterRow(
     title: String,
@@ -484,7 +690,7 @@ private fun ChildAgeField(
     ) {
         Text(
             text = buildAnnotatedString {
-                append(label.replace(" *", "")) // phần chữ
+                append(label.replace(" *", ""))
                 append(" ")
                 withStyle(style = SpanStyle(color = Color.Red)) {
                     append("*")
