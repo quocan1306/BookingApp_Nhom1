@@ -15,13 +15,13 @@ fun BottomNavigationBar(
     navController: NavController
 ) {
 
-    // 🔥 Lấy route hiện tại
+    // Lấy route hiện tại
     val backStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry.value?.destination?.route
 
     NavigationBar {
 
-        // 🏠 HOME
+        //  HOME
         NavigationBarItem(
             icon = { Icon(Icons.Default.Home, contentDescription = "") },
             label = { Text("Trang chủ") },
@@ -34,7 +34,19 @@ fun BottomNavigationBar(
             }
         )
 
-        // 🎒 TRIP
+        //Yêu thích/ Đã lưu
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.FavoriteBorder, contentDescription = "") },
+            label = { Text("Đã lưu") },
+            selected = currentRoute == "saved",
+            onClick = {
+                navController.navigate("saved") {
+                    launchSingleTop = true
+                }
+            }
+        )
+
+        //  TRIP
         NavigationBarItem(
             icon = { Icon(Icons.Default.Luggage, contentDescription = "") },
             label = { Text("Chuyến đi") },
@@ -46,7 +58,7 @@ fun BottomNavigationBar(
             }
         )
 
-        // 👤 PROFILE
+        // PROFILE
         NavigationBarItem(
             icon = { Icon(Icons.Default.Person, contentDescription = "") },
             label = { Text("Tài khoản") },

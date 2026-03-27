@@ -1,8 +1,8 @@
 package com.tranphanquocan.bookingks.ui.screen.profile
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -28,6 +27,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,6 +45,43 @@ import com.tranphanquocan.bookingks.ui.theme.TextGray
 fun PersonalInfoScreen(
     navController: NavController
 ) {
+    val backStackEntry = navController.currentBackStackEntry
+
+    val name by backStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("name", "")
+        ?.collectAsState() ?: remember {
+        mutableStateOf("")
+    }
+
+    val gender by backStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("gender", "")
+        ?.collectAsState() ?: remember {
+        mutableStateOf("")
+    }
+
+    val birthDate by backStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("birthdate", "")
+        ?.collectAsState() ?: remember {
+        mutableStateOf("")
+    }
+
+    val passport by backStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("passport", "")
+        ?.collectAsState() ?: remember {
+        mutableStateOf("")
+    }
+
+    val email by backStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("email", "")
+        ?.collectAsState() ?: remember {
+        mutableStateOf("")
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = LightGray,
@@ -76,31 +116,52 @@ fun PersonalInfoScreen(
 
                     PersonalInfoRow(
                         title = "Tên",
-                        value = "yud le"
+                        value = name,
+                        valueColor = if (name.isBlank()) TextGray else Color.Black,
+                        onClick = {
+                            navController.navigate(
+                                "edit_profile_field/name/${encodeNavValue(name)}"
+                            )
+                        }
                     )
 
                     HorizontalDivider(color = Color(0xFFE5E5E5))
 
                     PersonalInfoRow(
                         title = "Giới tính",
-                        value = "Chọn giới tính",
-                        valueColor = TextGray
+                        value = gender,
+                        valueColor = if (gender.isBlank()) TextGray else Color.Black,
+                        onClick = {
+                            navController.navigate(
+                                "edit_profile_field/gender/${encodeNavValue(gender)}"
+                            )
+                        }
                     )
 
                     HorizontalDivider(color = Color(0xFFE5E5E5))
 
                     PersonalInfoRow(
                         title = "Ngày sinh",
-                        value = "Nhập ngày sinh của bạn",
-                        valueColor = TextGray
+                        value = birthDate,
+                        valueColor = if (birthDate.isBlank()) TextGray else Color.Black,
+                        onClick = {
+                            navController.navigate(
+                                "edit_profile_field/birthdate/${encodeNavValue(birthDate)}"
+                            )
+                        }
                     )
 
                     HorizontalDivider(color = Color(0xFFE5E5E5))
 
                     PersonalInfoRow(
                         title = "Thông tin hộ chiếu",
-                        value = "Chưa cung cấp",
-                        valueColor = TextGray
+                        value = passport,
+                        valueColor = if (passport.isBlank()) TextGray else Color.Black,
+                        onClick = {
+                            navController.navigate(
+                                "edit_profile_field/passport/${encodeNavValue(passport)}"
+                            )
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -124,9 +185,14 @@ fun PersonalInfoScreen(
 
                     ContactInfoRow(
                         title = "Địa chỉ email",
-                        value = "zacks2995@gmail.com",
+                        value = email,
                         badgeText = "Xác thực",
-                        description = "Đây là địa chỉ email bạn dùng để đăng nhập. Chúng tôi cũng sẽ gửi các xác nhận đặt chỗ tới địa chỉ này."
+                        description = "Đây là địa chỉ email bạn dùng để đăng nhập. Chúng tôi cũng sẽ gửi các xác nhận đặt chỗ tới địa chỉ này.",
+                        onClick = {
+                            navController.navigate(
+                                "edit_profile_field/email/${encodeNavValue(email)}"
+                            )
+                        }
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -147,6 +213,10 @@ fun PersonalInfoScreen(
             }
         }
     }
+}
+
+private fun encodeNavValue(value: String): String {
+    return Uri.encode(if (value.isBlank()) "empty" else value)
 }
 
 @Composable
@@ -213,11 +283,13 @@ private fun PersonalInfoRow(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Text(
-            text = value,
-            style = MaterialTheme.typography.bodyLarge,
-            color = valueColor
-        )
+        if (value.isNotBlank()) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyLarge,
+                color = valueColor
+            )
+        }
     }
 }
 
@@ -253,32 +325,36 @@ private fun ContactInfoRow(
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        if (value.isNotBlank()) {
+            Spacer(modifier = Modifier.height(10.dp))
 
-        Text(
-            text = value,
-            style = MaterialTheme.typography.headlineSmall,
-            color = Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Box(
-            modifier = Modifier
-                .background(
-                    color = Color(0xFF16A34A),
-                    shape = MaterialTheme.shapes.small
-                )
-                .padding(horizontal = 10.dp, vertical = 6.dp)
-        ) {
             Text(
-                text = badgeText,
-                color = Color.White,
-                style = MaterialTheme.typography.bodyMedium
+                text = value,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.Black
             )
-        }
 
-        Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Box(
+                modifier = Modifier
+                    .background(
+                        color = Color(0xFF16A34A),
+                        shape = MaterialTheme.shapes.small
+                    )
+                    .padding(horizontal = 10.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = badgeText,
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+        } else {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
 
         Text(
             text = description,

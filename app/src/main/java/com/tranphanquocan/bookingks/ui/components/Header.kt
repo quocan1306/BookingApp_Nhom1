@@ -111,7 +111,9 @@ fun SearchItem(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBox() {
+fun SearchBox(
+    onSearchClick: (String, String, String) -> Unit = { _, _, _ -> }
+) {
     var location by remember { mutableStateOf("") }
 
     var dateText by remember { mutableStateOf("Chọn ngày") }
@@ -191,7 +193,19 @@ fun SearchBox() {
         )
 
         Button(
-            onClick = {},
+            onClick = {
+                if (
+                    location.isNotBlank() &&
+                    checkInDate != null &&
+                    checkOutDate != null
+                ) {
+                    onSearchClick(
+                        location,
+                        formatShortDate(checkInDate!!),
+                        formatShortDate(checkOutDate!!)
+                    )
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
@@ -208,7 +222,6 @@ fun SearchBox() {
             onDismissRequest = { showDatePicker = false },
             modifier = Modifier.navigationBarsPadding()
         ) {
-
             DateRangeBottomSheet(
                 initialCheckIn = checkInDate,
                 initialCheckOut = checkOutDate,

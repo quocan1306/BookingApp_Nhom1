@@ -1,7 +1,6 @@
 package com.tranphanquocan.bookingks.ui.screen.profile
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,20 +20,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
-
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.People
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,9 +86,7 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item {
-                ProfileHeader(
-                    onLoginClick = onLoginClick
-                )
+                ProfileHeader(onLoginClick = onLoginClick)
             }
 
             item {
@@ -107,8 +102,16 @@ fun ProfileScreen(
                     title = item.title,
                     icon = item.icon,
                     onClick = {
-                        if (item.title == "Thông tin tài khoản") {
-                            navController.navigate("personal_info")
+                        when (item.title) {
+                            "Thông tin tài khoản" -> {
+                                navController.navigate("personal_info")
+                            }
+                            "Cài đặt bảo mật" -> {
+                                navController.navigate("security_settings")
+                            }
+                            "Người đi cùng" -> {
+                                navController.navigate("companions")
+                            }
                         }
                     }
                 )
@@ -126,7 +129,15 @@ fun ProfileScreen(
                 ProfileItem(
                     title = item.title,
                     icon = item.icon,
-                    onClick = { }
+                    onClick = {
+                        when (item.title) {
+                            "Phương thức thanh toán" -> {
+                                navController.navigate("payment_method")
+                            }
+                            "Giao dịch" -> {
+                            }
+                        }
+                    }
                 )
             }
 
@@ -144,11 +155,7 @@ fun ProfileScreen(
                     onClick = {
                         UserState.isLoggedIn.value = false
                         UserState.userName.value = ""
-
-                        navController.navigate("home") {
-                            popUpTo(0)
-                            launchSingleTop = true
-                        }
+                        onLogout()
                     }
                 )
             }
@@ -174,9 +181,7 @@ private fun ProfileHeader(
             .statusBarsPadding()
             .padding(horizontal = 20.dp, vertical = 20.dp)
     ) {
-
         if (isLoggedIn) {
-            // đã đăng nhập
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -202,13 +207,9 @@ private fun ProfileHeader(
                         style = MaterialTheme.typography.titleLarge,
                         color = Color.White
                     )
-
-
                 }
             }
-
         } else {
-            // chưa đăng nhập
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

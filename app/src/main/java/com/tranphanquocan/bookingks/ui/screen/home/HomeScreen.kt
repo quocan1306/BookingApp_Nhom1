@@ -58,7 +58,13 @@ fun HomeScreen(
         ) {
 
             item {
-                SearchBox()
+                SearchBox(
+                    onSearchClick = { location, checkIn, checkOut ->
+                        navController.navigate(
+                            "hotel_list/${android.net.Uri.encode(location)}/${android.net.Uri.encode(checkIn)}/${android.net.Uri.encode(checkOut)}"
+                        )
+                    }
+                )
             }
 
             item {
@@ -92,7 +98,14 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(destinations) { destination ->
-                        DestinationCard(destination)
+                        DestinationCard(
+                            destination = destination,
+                            onClick = {
+                                navController.navigate(
+                                    "hotel_list_by_location/${android.net.Uri.encode(destination.location)}"
+                                )
+                            }
+                        )
                     }
                 }
             }

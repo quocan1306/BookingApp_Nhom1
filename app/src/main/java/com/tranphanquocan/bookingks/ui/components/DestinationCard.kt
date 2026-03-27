@@ -22,20 +22,18 @@ import com.tranphanquocan.bookingks.data.model.Destinations
 @Composable
 fun DestinationCard(
     destination: Destinations,
-    onClick: (Destinations) -> Unit ={}
+    onClick: (Destinations) -> Unit = {}
 ) {
-
     Card(
         modifier = Modifier
             .padding(12.dp)
             .width(260.dp)
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .clickable { onClick(destination) },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
-
         Box {
-
             Image(
                 painter = painterResource(destination.image),
                 contentDescription = destination.name,
@@ -52,7 +50,6 @@ fun DestinationCard(
                     .align(Alignment.BottomStart)
                     .padding(16.dp)
             )
-
         }
     }
 }
