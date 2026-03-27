@@ -10,8 +10,12 @@ activityCompose = "1.13.0"
 composeBom = "2024.09.00"
 foundationLayout = "1.10.5"
 material = "1.13.0"
+firebaseAuth = "22.3.1"
+googleServices = "4.4.1"
+
 
 [libraries]
+firebase-auth = { module = "com.google.firebase:firebase-auth-ktx", version.ref = "firebaseAuth" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -31,6 +35,7 @@ androidx-compose-foundation-layout = { group = "androidx.compose.foundation", na
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 [plugins]
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

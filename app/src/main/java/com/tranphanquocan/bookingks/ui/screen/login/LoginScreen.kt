@@ -18,10 +18,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
+import androidx.navigation.NavController
+import com.tranphanquocan.bookingks.ui.state.UserState
+import com.tranphanquocan.bookingks.viewmodel.AuthViewModel
+
 @Composable
 fun LoginScreen(
-    onNavigateToRegister: () -> Unit,
-    onLoginSuccess: () -> Unit,
+//    onNavigateToRegister: () -> Unit,
+//    onLoginSuccess: () -> Unit,
+    navController: NavController,
+    viewModel: AuthViewModel
     onBackToHome: () -> Unit
 ) {
 
@@ -87,13 +96,20 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = { onLoginSuccess() },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = ButtonBlue
-                )
-            ) {
+            Button(onClick = {
+                viewModel.login(email, password) {
+                    if (it) {
+                        //email firebase
+                        UserState.isLoggedIn.value = true
+                        UserState.userName.value = email
+
+                        navController.navigate("home") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                }
+            })
+            {   
                 Text("Đăng nhập")
             }
         }
@@ -106,7 +122,7 @@ fun LoginScreen(
                 "Đăng ký",
                 color = Color.Yellow,
                 modifier = Modifier.clickable {
-                    onNavigateToRegister()
+//                    onNavigateToRegister()
                 }
             )
         }

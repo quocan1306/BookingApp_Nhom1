@@ -26,13 +26,15 @@ import com.tranphanquocan.bookingks.ui.components.BottomNavigationBar
 import com.tranphanquocan.bookingks.ui.components.Header
 import com.tranphanquocan.bookingks.ui.components.HotelCard
 import com.tranphanquocan.bookingks.ui.components.SearchBox
+import com.tranphanquocan.bookingks.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     hotels: List<Hotel>,
     destinations: List<Destinations>,
-    navController: NavController
+    navController: NavController,
+    viewModel: AuthViewModel
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
