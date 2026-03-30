@@ -1,30 +1,49 @@
 package com.tranphanquocan.bookingks.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.auth.FirebaseAuth
 import com.tranphanquocan.bookingks.R
 import com.tranphanquocan.bookingks.data.model.Destinations
 import com.tranphanquocan.bookingks.data.model.Hotel
 import com.tranphanquocan.bookingks.ui.screen.home.HomeScreen
+import com.tranphanquocan.bookingks.ui.screen.hotel.HotelDetailScreen
 import com.tranphanquocan.bookingks.ui.screen.hotel.HotelListScreen
 import com.tranphanquocan.bookingks.ui.screen.login.LoginScreen
-import com.tranphanquocan.bookingks.ui.screen.profile.companion.AddEditCompanionScreen
 import com.tranphanquocan.bookingks.ui.screen.profile.ChangePasswordScreen
-import com.tranphanquocan.bookingks.ui.screen.profile.companion.CompanionsScreen
 import com.tranphanquocan.bookingks.ui.screen.profile.EditProfileFieldScreen
+import com.tranphanquocan.bookingks.ui.screen.profile.PaymentMethodScreen
 import com.tranphanquocan.bookingks.ui.screen.profile.PersonalInfoScreen
 import com.tranphanquocan.bookingks.ui.screen.profile.ProfileScreen
 import com.tranphanquocan.bookingks.ui.screen.profile.SecuritySettingsScreen
+import com.tranphanquocan.bookingks.ui.screen.profile.companion.AddEditCompanionScreen
+import com.tranphanquocan.bookingks.ui.screen.profile.companion.CompanionsScreen
 import com.tranphanquocan.bookingks.ui.screen.register.RegisterScreen
-import com.tranphanquocan.bookingks.ui.screen.profile.PaymentMethodScreen
+import com.tranphanquocan.bookingks.ui.state.UserState
+import com.tranphanquocan.bookingks.viewmodel.AuthViewModel
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
+    val authViewModel: AuthViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (user != null) {
+            UserState.isLoggedIn.value = true
+            UserState.userName.value = user.displayName ?: user.email ?: ""
+        } else {
+            UserState.isLoggedIn.value = false
+            UserState.userName.value = ""
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -35,9 +54,8 @@ fun AppNavigation() {
                 onNavigateToRegister = {
                     navController.navigate("register")
                 },
-                onLoginSuccess = {
-                    navController.navigate("home")
-                },
+                navController = navController,
+                viewModel = authViewModel,
                 onBackToHome = {
                     navController.navigate("home")
                 }
@@ -110,7 +128,8 @@ fun AppNavigation() {
             HomeScreen(
                 hotels = hotels,
                 destinations = destinations,
-                navController = navController
+                navController = navController,
+                viewModel = authViewModel
             )
         }
 
@@ -286,10 +305,41 @@ fun AppNavigation() {
             )
         }
 
+        composable(
+            route = "hotel_detail/{hotelName}/{hotelLocation}/{checkIn}/{checkOut}",
+            arguments = listOf(
+                navArgument("hotelName") { type = NavType.StringType },
+                navArgument("hotelLocation") { type = NavType.StringType },
+                navArgument("checkIn") { type = NavType.StringType },
+                navArgument("checkOut") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val hotelName = backStackEntry.arguments?.getString("hotelName") ?: ""
+            val hotelLocation = backStackEntry.arguments?.getString("hotelLocation") ?: ""
+            val rawCheckIn = backStackEntry.arguments?.getString("checkIn") ?: ""
+            val rawCheckOut = backStackEntry.arguments?.getString("checkOut") ?: ""
+
+            val checkIn = if (rawCheckIn == "empty") "" else rawCheckIn
+            val checkOut = if (rawCheckOut == "empty") "" else rawCheckOut
+
+            HotelDetailScreen(
+                navController = navController,
+                hotelName = hotelName,
+                hotelLocation = hotelLocation,
+                checkIn = checkIn,
+                checkOut = checkOut
+            )
+        }
+
         composable("profile") {
             ProfileScreen(
                 navController = navController,
                 onLogout = {
+                    authViewModel.logout()
+
+                    UserState.isLoggedIn.value = false
+                    UserState.userName.value = ""
+
                     navController.navigate("login") {
                         popUpTo("home") { inclusive = true }
                     }
@@ -353,6 +403,7 @@ fun AppNavigation() {
                 currentValue = currentValue
             )
         }
+
         composable("payment_method") {
             PaymentMethodScreen(navController = navController)
         }

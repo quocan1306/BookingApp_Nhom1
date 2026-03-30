@@ -1,6 +1,5 @@
 package com.tranphanquocan.bookingks.ui.components
 
-import android.text.Highlights
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -30,22 +29,21 @@ import androidx.compose.ui.unit.sp
 import com.tranphanquocan.bookingks.data.model.Hotel
 import com.tranphanquocan.bookingks.ui.theme.AccentBlue
 
-
 @Composable
-fun HotelCard(hotel: Hotel) {
-
+fun HotelCard(
+    hotel: Hotel,
+    onClick: () -> Unit
+) {
     Card(
         modifier = Modifier
             .padding(12.dp)
             .width(260.dp)
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
-
         Column {
-
-            // IMAGE
             Image(
                 painter = painterResource(id = hotel.image),
                 contentDescription = hotel.name,
@@ -58,8 +56,6 @@ fun HotelCard(hotel: Hotel) {
             Column(
                 modifier = Modifier.padding(12.dp)
             ) {
-
-                // HOTEL NAME
                 Text(
                     text = hotel.name,
                     fontSize = 18.sp
@@ -67,11 +63,9 @@ fun HotelCard(hotel: Hotel) {
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                // RATING ROW
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
@@ -94,7 +88,6 @@ fun HotelCard(hotel: Hotel) {
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                // LOCATION
                 Text(
                     text = hotel.location,
                     fontSize = 13.sp
@@ -102,7 +95,6 @@ fun HotelCard(hotel: Hotel) {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // TAG
                 Box(
                     modifier = Modifier
                         .background(Color(0xFF2E7D32), RoundedCornerShape(6.dp))
@@ -117,9 +109,7 @@ fun HotelCard(hotel: Hotel) {
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                // PRICE
                 Column {
-
                     Text(
                         text = hotel.oldPrice,
                         fontSize = 13.sp,
@@ -133,7 +123,6 @@ fun HotelCard(hotel: Hotel) {
                         color = Color.Black
                     )
                 }
-
             }
         }
     }

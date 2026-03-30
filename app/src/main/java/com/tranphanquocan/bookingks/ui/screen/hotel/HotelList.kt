@@ -1,5 +1,7 @@
 package com.tranphanquocan.bookingks.ui.screen.hotel
 
+import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -99,7 +101,21 @@ fun HotelListScreen(
                 modifier = Modifier.padding(horizontal = 12.dp)
             ) {
                 items(sortedHotels) { hotel ->
-                    HotelListItem(hotel = hotel)
+                    HotelListItem(
+                        hotel = hotel,
+                        onClick = {
+                            val safeCheckIn = if (checkIn.isBlank()) "empty" else checkIn
+                            val safeCheckOut = if (checkOut.isBlank()) "empty" else checkOut
+
+                            navController.navigate(
+                                "hotel_detail/" +
+                                        Uri.encode(hotel.name) + "/" +
+                                        Uri.encode(hotel.location) + "/" +
+                                        Uri.encode(safeCheckIn) + "/" +
+                                        Uri.encode(safeCheckOut)
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -131,7 +147,7 @@ private fun HotelListHeader(
             colors = CardDefaults.cardColors(containerColor = Color.White),
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-            border = androidx.compose.foundation.BorderStroke(3.dp, BorderYellow)
+            border = BorderStroke(3.dp, BorderYellow)
         ) {
             Row(
                 modifier = Modifier
@@ -216,10 +232,13 @@ private fun FilterBar(
 
 @Composable
 private fun HotelListItem(
-    hotel: Hotel
+    hotel: Hotel,
+    onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)

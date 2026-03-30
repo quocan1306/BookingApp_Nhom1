@@ -15,6 +15,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -36,6 +40,10 @@ fun HomeScreen(
     navController: NavController,
     viewModel: AuthViewModel
 ) {
+    var selectedLocation by rememberSaveable { mutableStateOf("") }
+    var selectedCheckIn by rememberSaveable { mutableStateOf("") }
+    var selectedCheckOut by rememberSaveable { mutableStateOf("") }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -62,8 +70,15 @@ fun HomeScreen(
             item {
                 SearchBox(
                     onSearchClick = { location, checkIn, checkOut ->
+                        selectedLocation = location
+                        selectedCheckIn = checkIn
+                        selectedCheckOut = checkOut
+
                         navController.navigate(
-                            "hotel_list/${android.net.Uri.encode(location)}/${android.net.Uri.encode(checkIn)}/${android.net.Uri.encode(checkOut)}"
+                            "hotel_list/" +
+                                    android.net.Uri.encode(location) + "/" +
+                                    android.net.Uri.encode(checkIn) + "/" +
+                                    android.net.Uri.encode(checkOut)
                         )
                     }
                 )
@@ -82,7 +97,23 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(hotels) { hotel ->
-                        HotelCard(hotel)
+                        HotelCard(
+                            hotel = hotel,
+                            onClick = {
+                                val safeCheckIn =
+                                    if (selectedCheckIn.isBlank()) "empty" else selectedCheckIn
+                                val safeCheckOut =
+                                    if (selectedCheckOut.isBlank()) "empty" else selectedCheckOut
+
+                                navController.navigate(
+                                    "hotel_detail/" +
+                                            android.net.Uri.encode(hotel.name) + "/" +
+                                            android.net.Uri.encode(hotel.location) + "/" +
+                                            android.net.Uri.encode(safeCheckIn) + "/" +
+                                            android.net.Uri.encode(safeCheckOut)
+                                )
+                            }
+                        )
                     }
                 }
             }

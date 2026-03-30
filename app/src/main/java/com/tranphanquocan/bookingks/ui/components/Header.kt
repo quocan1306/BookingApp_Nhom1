@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -38,8 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -415,19 +414,21 @@ private fun DateRangeBottomSheet(
     onApply: (LocalDate, LocalDate) -> Unit,
     onClose: () -> Unit
 ) {
-    var currentMonth by remember { mutableStateOf(YearMonth.now()) }
+    val today = LocalDate.now()
+    val months = remember {
+        List(12) { index -> YearMonth.now().plusMonths(index.toLong()) }
+    }
+
     var tempCheckIn by remember { mutableStateOf(initialCheckIn) }
     var tempCheckOut by remember { mutableStateOf(initialCheckOut) }
 
     val daysOfWeek = listOf("Th 2", "Th 3", "Th 4", "Th 5", "Th 6", "Th 7", "CN")
-    val dates = remember(currentMonth) { buildCalendarDays(currentMonth) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 16.dp)
     ) {
-
         Text(
             text = "Chọn",
             fontSize = 28.sp,
@@ -454,40 +455,64 @@ private fun DateRangeBottomSheet(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(7),
+        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(320.dp)
+                .height(420.dp)
                 .padding(horizontal = 8.dp),
-            userScrollEnabled = false
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            items(dates) { date ->
-                CalendarDayItem(
-                    date = date,
-                    checkInDate = tempCheckIn,
-                    checkOutDate = tempCheckOut,
-                    onDateClick = { clickedDate ->
-                        when {
-                            tempCheckIn == null -> {
-                                tempCheckIn = clickedDate
-                            }
+            items(months) { month ->
+                val dates = buildCalendarDays(month)
 
-                            tempCheckOut == null && clickedDate.isAfter(tempCheckIn) -> {
-                                tempCheckOut = clickedDate
-                            }
+                Column {
+                    Text(
+                        text = "Tháng ${month.monthValue}/${month.year}",
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
 
-                            tempCheckOut == null && clickedDate.isEqual(tempCheckIn) -> {
-                                tempCheckOut = clickedDate.plusDays(1)
-                            }
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(7),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(gridHeightForMonth(dates.size)),
+                        userScrollEnabled = false
+                    ) {
+                        items(dates) { date ->
+                            CalendarDayItem(
+                                date = date,
+                                today = today,
+                                checkInDate = tempCheckIn,
+                                checkOutDate = tempCheckOut,
+                                onDateClick = { clickedDate ->
+                                    if (clickedDate.isBefore(today)) return@CalendarDayItem
 
-                            else -> {
-                                tempCheckIn = clickedDate
-                                tempCheckOut = null
-                            }
+                                    when {
+                                        tempCheckIn == null -> {
+                                            tempCheckIn = clickedDate
+                                        }
+
+                                        tempCheckOut == null && clickedDate.isAfter(tempCheckIn) -> {
+                                            tempCheckOut = clickedDate
+                                        }
+
+                                        tempCheckOut == null && clickedDate.isEqual(tempCheckIn) -> {
+                                            tempCheckOut = clickedDate.plusDays(1)
+                                        }
+
+                                        else -> {
+                                            tempCheckIn = clickedDate
+                                            tempCheckOut = null
+                                        }
+                                    }
+                                }
+                            )
                         }
                     }
-                )
+                }
             }
         }
 
@@ -535,6 +560,7 @@ private fun DateRangeBottomSheet(
 @Composable
 private fun CalendarDayItem(
     date: LocalDate?,
+    today: LocalDate,
     checkInDate: LocalDate?,
     checkOutDate: LocalDate?,
     onDateClick: (LocalDate) -> Unit
@@ -548,6 +574,7 @@ private fun CalendarDayItem(
         return
     }
 
+    val isPastDate = date.isBefore(today)
     val isStart = checkInDate != null && date.isEqual(checkInDate)
     val isEnd = checkOutDate != null && date.isEqual(checkOutDate)
     val isInRange = checkInDate != null && checkOutDate != null &&
@@ -560,6 +587,7 @@ private fun CalendarDayItem(
     }
 
     val textColor = when {
+        isPastDate -> Color.LightGray
         isStart || isEnd -> Color.White
         else -> Color.Black
     }
@@ -569,7 +597,9 @@ private fun CalendarDayItem(
             .size(44.dp)
             .padding(2.dp)
             .background(bgColor, RoundedCornerShape(4.dp))
-            .clickable { onDateClick(date) },
+            .then(
+                if (isPastDate) Modifier else Modifier.clickable { onDateClick(date) }
+            ),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -605,6 +635,11 @@ private fun buildCalendarDays(month: YearMonth): List<LocalDate?> {
     }
 
     return result
+}
+
+private fun gridHeightForMonth(totalCells: Int): androidx.compose.ui.unit.Dp {
+    val rows = (totalCells + 6) / 7
+    return (rows * 48).dp
 }
 
 private fun formatShortDate(date: LocalDate): String {

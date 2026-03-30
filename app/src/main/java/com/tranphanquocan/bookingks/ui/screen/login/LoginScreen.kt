@@ -1,4 +1,5 @@
 package com.tranphanquocan.bookingks.ui.screen.login
+import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
@@ -22,15 +23,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.tranphanquocan.bookingks.ui.state.UserState
 import com.tranphanquocan.bookingks.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
-//    onNavigateToRegister: () -> Unit,
+    onNavigateToRegister: () -> Unit,
 //    onLoginSuccess: () -> Unit,
     navController: NavController,
-    viewModel: AuthViewModel
+    viewModel: AuthViewModel,
     onBackToHome: () -> Unit
 ) {
 
@@ -101,11 +103,17 @@ fun LoginScreen(
                     if (it) {
                         //email firebase
                         UserState.isLoggedIn.value = true
-                        UserState.userName.value = email
+                        val user = FirebaseAuth.getInstance().currentUser
+
+                        UserState.userName.value =
+                            user?.displayName ?: user?.email ?: ""
 
                         navController.navigate("home") {
                             popUpTo("login") { inclusive = true }
                         }
+                    }
+                    else{
+                        Toast.makeText(navController.context,"Login Failed",Toast.LENGTH_SHORT).show()
                     }
                 }
             })
