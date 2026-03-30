@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.tranphanquocan.bookingks.data.model.Companion
 import com.tranphanquocan.bookingks.data.model.PaymentCard
+import com.tranphanquocan.bookingks.data.model.SavedHotelItem
 
 object UserState {
     val isLoggedIn = mutableStateOf(false)
@@ -14,6 +15,8 @@ object UserState {
     val nextCompanionId = mutableIntStateOf(1)
 
     val paymentCard = mutableStateOf<PaymentCard?>(null)
+
+    val savedHotels = mutableStateListOf<SavedHotelItem>()
 
     fun addCompanion(
         firstName: String,
@@ -73,5 +76,34 @@ object UserState {
             cardNumber = cardNumber,
             expiryDate = expiryDate
         )
+    }
+
+    fun isHotelSaved(
+        name: String,
+        location: String,
+        checkIn: String,
+        checkOut: String
+    ): Boolean {
+        return savedHotels.any {
+            it.name == name &&
+                    it.location == location &&
+                    it.checkIn == checkIn &&
+                    it.checkOut == checkOut
+        }
+    }
+
+    fun toggleSavedHotel(item: SavedHotelItem) {
+        val existing = savedHotels.indexOfFirst {
+            it.name == item.name &&
+                    it.location == item.location &&
+                    it.checkIn == item.checkIn &&
+                    it.checkOut == item.checkOut
+        }
+
+        if (existing != -1) {
+            savedHotels.removeAt(existing)
+        } else {
+            savedHotels.add(item)
+        }
     }
 }

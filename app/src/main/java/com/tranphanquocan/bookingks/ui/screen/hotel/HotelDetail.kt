@@ -22,7 +22,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Bathtub
@@ -34,13 +35,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,12 +47,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tranphanquocan.bookingks.R
+import com.tranphanquocan.bookingks.data.model.SavedHotelItem
+import com.tranphanquocan.bookingks.ui.state.UserState
 import com.tranphanquocan.bookingks.ui.theme.PrimaryBlue
 
 @Composable
@@ -63,12 +62,23 @@ fun HotelDetailScreen(
     hotelLocation: String,
     checkIn: String = "",
     checkOut: String = "",
-    guestInfo: String = "1 phòng, 2 người lớn, 0 trẻ em"
+    guestInfo: String = "1 phòng, 2 người lớn, 0 trẻ em",
+    hotelImage: Int,
+    hotelTag: String,
+    oldPrice: String,
+    newPrice: String
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
 
     val displayCheckIn = if (checkIn.isBlank()) "Chưa chọn ngày" else checkIn
     val displayCheckOut = if (checkOut.isBlank()) "Chưa chọn ngày" else checkOut
+
+    val isSaved = UserState.isHotelSaved(
+        name = hotelName,
+        location = hotelLocation,
+        checkIn = checkIn,
+        checkOut = checkOut
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -77,7 +87,22 @@ fun HotelDetailScreen(
         topBar = {
             HotelDetailTopBar(
                 title = hotelName,
-                onBackClick = { navController.popBackStack() }
+                isSaved = isSaved,
+                onBackClick = { navController.popBackStack() },
+                onFavoriteClick = {
+                    UserState.toggleSavedHotel(
+                        SavedHotelItem(
+                            name = hotelName,
+                            location = hotelLocation,
+                            tag = hotelTag,
+                            oldPrice = oldPrice,
+                            newPrice = newPrice,
+                            image = hotelImage,
+                            checkIn = checkIn,
+                            checkOut = checkOut
+                        )
+                    )
+                }
             )
         },
         bottomBar = {
@@ -147,7 +172,9 @@ fun HotelDetailScreen(
 @Composable
 private fun HotelDetailTopBar(
     title: String,
-    onBackClick: () -> Unit
+    isSaved: Boolean,
+    onBackClick: () -> Unit,
+    onFavoriteClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -178,9 +205,10 @@ private fun HotelDetailTopBar(
         Spacer(modifier = Modifier.width(12.dp))
 
         Icon(
-            imageVector = Icons.Default.FavoriteBorder,
+            imageVector = if (isSaved) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
             contentDescription = "Favorite",
-            tint = Color.White
+            tint = if (isSaved) Color.Red else Color.White,
+            modifier = Modifier.clickable { onFavoriteClick() }
         )
     }
 }
@@ -239,9 +267,7 @@ private fun HotelHeaderSection(
         }
 
         Spacer(modifier = Modifier.height(20.dp))
-
         PhotoGridSection()
-
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(
@@ -451,17 +477,6 @@ private fun AttractionSection(
             color = Color(0xFF222222),
             modifier = Modifier.padding(16.dp)
         )
-
-        ScrollableTabRow(
-            selectedTabIndex = selectedTab,
-            containerColor = Color.White
-        ) {
-            Tab(
-                selected = selectedTab == 0,
-                onClick = { onTabSelected(0) },
-                text = { Text("Địa điểm tham quan") }
-            )
-        }
 
         Column(
             modifier = Modifier.padding(16.dp)

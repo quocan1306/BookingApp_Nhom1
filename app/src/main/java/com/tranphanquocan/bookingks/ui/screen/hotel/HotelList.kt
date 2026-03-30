@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.FilterList
@@ -48,6 +49,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tranphanquocan.bookingks.data.model.Hotel
+import com.tranphanquocan.bookingks.data.model.SavedHotelItem
+import com.tranphanquocan.bookingks.ui.state.UserState
 import com.tranphanquocan.bookingks.ui.theme.BorderYellow
 import com.tranphanquocan.bookingks.ui.theme.ButtonBlue
 import com.tranphanquocan.bookingks.ui.theme.LightGray
@@ -103,7 +106,9 @@ fun HotelListScreen(
                 items(sortedHotels) { hotel ->
                     HotelListItem(
                         hotel = hotel,
-                        onClick = {
+                        checkIn = checkIn,
+                        checkOut = checkOut,
+                        onCardClick = {
                             val safeCheckIn = if (checkIn.isBlank()) "empty" else checkIn
                             val safeCheckOut = if (checkOut.isBlank()) "empty" else checkOut
 
@@ -112,7 +117,11 @@ fun HotelListScreen(
                                         Uri.encode(hotel.name) + "/" +
                                         Uri.encode(hotel.location) + "/" +
                                         Uri.encode(safeCheckIn) + "/" +
-                                        Uri.encode(safeCheckOut)
+                                        Uri.encode(safeCheckOut) + "/" +
+                                        hotel.image + "/" +
+                                        Uri.encode(hotel.tag) + "/" +
+                                        Uri.encode(hotel.oldPrice) + "/" +
+                                        Uri.encode(hotel.newPrice)
                             )
                         }
                     )
@@ -233,12 +242,21 @@ private fun FilterBar(
 @Composable
 private fun HotelListItem(
     hotel: Hotel,
-    onClick: () -> Unit
+    checkIn: String,
+    checkOut: String,
+    onCardClick: () -> Unit
 ) {
+    val isSaved = UserState.isHotelSaved(
+        name = hotel.name,
+        location = hotel.location,
+        checkIn = checkIn,
+        checkOut = checkOut
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() },
+            .clickable { onCardClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
@@ -272,8 +290,23 @@ private fun HotelListItem(
                     )
 
                     Icon(
-                        imageVector = Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Favorite"
+                        imageVector = if (isSaved) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (isSaved) Color.Red else Color.Black,
+                        modifier = Modifier.clickable {
+                            UserState.toggleSavedHotel(
+                                SavedHotelItem(
+                                    name = hotel.name,
+                                    location = hotel.location,
+                                    tag = hotel.tag,
+                                    oldPrice = hotel.oldPrice,
+                                    newPrice = hotel.newPrice,
+                                    image = hotel.image,
+                                    checkIn = checkIn,
+                                    checkOut = checkOut
+                                )
+                            )
+                        }
                     )
                 }
 

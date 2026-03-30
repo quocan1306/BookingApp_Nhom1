@@ -25,6 +25,7 @@ import com.tranphanquocan.bookingks.ui.screen.profile.SecuritySettingsScreen
 import com.tranphanquocan.bookingks.ui.screen.profile.companion.AddEditCompanionScreen
 import com.tranphanquocan.bookingks.ui.screen.profile.companion.CompanionsScreen
 import com.tranphanquocan.bookingks.ui.screen.register.RegisterScreen
+import com.tranphanquocan.bookingks.ui.screen.saved.SavedScreen
 import com.tranphanquocan.bookingks.ui.state.UserState
 import com.tranphanquocan.bookingks.viewmodel.AuthViewModel
 
@@ -131,6 +132,10 @@ fun AppNavigation() {
                 navController = navController,
                 viewModel = authViewModel
             )
+        }
+
+        composable("saved") {
+            SavedScreen(navController = navController)
         }
 
         composable(
@@ -306,18 +311,26 @@ fun AppNavigation() {
         }
 
         composable(
-            route = "hotel_detail/{hotelName}/{hotelLocation}/{checkIn}/{checkOut}",
+            route = "hotel_detail/{hotelName}/{hotelLocation}/{checkIn}/{checkOut}/{hotelImage}/{hotelTag}/{oldPrice}/{newPrice}",
             arguments = listOf(
                 navArgument("hotelName") { type = NavType.StringType },
                 navArgument("hotelLocation") { type = NavType.StringType },
                 navArgument("checkIn") { type = NavType.StringType },
-                navArgument("checkOut") { type = NavType.StringType }
+                navArgument("checkOut") { type = NavType.StringType },
+                navArgument("hotelImage") { type = NavType.IntType },
+                navArgument("hotelTag") { type = NavType.StringType },
+                navArgument("oldPrice") { type = NavType.StringType },
+                navArgument("newPrice") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val hotelName = backStackEntry.arguments?.getString("hotelName") ?: ""
             val hotelLocation = backStackEntry.arguments?.getString("hotelLocation") ?: ""
             val rawCheckIn = backStackEntry.arguments?.getString("checkIn") ?: ""
             val rawCheckOut = backStackEntry.arguments?.getString("checkOut") ?: ""
+            val hotelImage = backStackEntry.arguments?.getInt("hotelImage") ?: R.drawable.hotelcard_hotel1
+            val hotelTag = backStackEntry.arguments?.getString("hotelTag") ?: ""
+            val oldPrice = backStackEntry.arguments?.getString("oldPrice") ?: ""
+            val newPrice = backStackEntry.arguments?.getString("newPrice") ?: ""
 
             val checkIn = if (rawCheckIn == "empty") "" else rawCheckIn
             val checkOut = if (rawCheckOut == "empty") "" else rawCheckOut
@@ -327,7 +340,11 @@ fun AppNavigation() {
                 hotelName = hotelName,
                 hotelLocation = hotelLocation,
                 checkIn = checkIn,
-                checkOut = checkOut
+                checkOut = checkOut,
+                hotelImage = hotelImage,
+                hotelTag = hotelTag,
+                oldPrice = oldPrice,
+                newPrice = newPrice
             )
         }
 

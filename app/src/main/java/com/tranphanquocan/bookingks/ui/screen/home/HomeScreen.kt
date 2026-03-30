@@ -110,7 +110,11 @@ fun HomeScreen(
                                             android.net.Uri.encode(hotel.name) + "/" +
                                             android.net.Uri.encode(hotel.location) + "/" +
                                             android.net.Uri.encode(safeCheckIn) + "/" +
-                                            android.net.Uri.encode(safeCheckOut)
+                                            android.net.Uri.encode(safeCheckOut) + "/" +
+                                            hotel.image + "/" +
+                                            android.net.Uri.encode(hotel.tag) + "/" +
+                                            android.net.Uri.encode(hotel.oldPrice) + "/" +
+                                            android.net.Uri.encode(hotel.newPrice)
                                 )
                             }
                         )

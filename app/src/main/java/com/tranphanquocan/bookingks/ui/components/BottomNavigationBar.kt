@@ -1,6 +1,6 @@
 package com.tranphanquocan.bookingks.ui.components
 
-// 🔹 IMPORT
+//  IMPORT
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.material.icons.Icons
