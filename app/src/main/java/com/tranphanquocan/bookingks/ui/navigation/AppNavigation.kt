@@ -40,6 +40,11 @@ fun AppNavigation() {
         if (user != null) {
             UserState.isLoggedIn.value = true
             UserState.userName.value = user.displayName ?: user.email ?: ""
+
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+            }
+
         } else {
             UserState.isLoggedIn.value = false
             UserState.userName.value = ""
@@ -68,6 +73,8 @@ fun AppNavigation() {
                 onBackToLogin = {
                     navController.popBackStack()
                 },
+                navController = navController,
+                viewModel = authViewModel,
                 onBackToHome = {
                     navController.navigate("home")
                 }

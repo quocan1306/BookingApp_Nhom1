@@ -15,22 +15,24 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tranphanquocan.bookingks.ui.state.UserState
+import com.tranphanquocan.bookingks.ui.theme.ButtonBlue
 import com.tranphanquocan.bookingks.ui.theme.LightGray
 import com.tranphanquocan.bookingks.ui.theme.PrimaryBlue
 
@@ -125,9 +128,20 @@ fun AddEditCompanionScreen(
                             }
                         }
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ButtonBlue,
+                        contentColor = Color.White
+                    )
                 ) {
-                    Text(if (isEditMode) "Lưu thay đổi" else "Thêm người đi cùng")
+                    Text(
+                        text = if (isEditMode) "Lưu thay đổi" else "Thêm người đi cùng",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }
@@ -194,10 +208,6 @@ fun AddEditCompanionScreen(
                 singleLine = true,
                 placeholder = { Text("DD/MM/YYYY") },
                 trailingIcon = {
-                    /*Icon(
-                        imageVector = Icons.Default.KeyboardArrowDown,
-                        contentDescription = null
-                    )*/
                 }
             )
 
@@ -249,7 +259,6 @@ fun AddEditCompanionScreen(
                             genderExpanded = false
                         }
                     )
-
                 }
             }
 

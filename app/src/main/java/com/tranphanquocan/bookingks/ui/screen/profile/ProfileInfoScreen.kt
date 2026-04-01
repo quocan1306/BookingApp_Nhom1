@@ -23,7 +23,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tranphanquocan.bookingks.ui.theme.LightGray
 import com.tranphanquocan.bookingks.ui.theme.PrimaryBlue
@@ -108,7 +108,9 @@ fun PersonalInfoScreen(
                 ) {
                     Text(
                         text = "Chúng tôi sẽ lưu thông tin này để giúp bạn đặt nhanh hơn.",
-                        style = MaterialTheme.typography.headlineSmall,
+                        fontSize = 15.sp,
+                        lineHeight = 22.sp,
+                        fontWeight = FontWeight.Medium,
                         color = Color(0xFF444444)
                     )
 
@@ -168,7 +170,8 @@ fun PersonalInfoScreen(
 
                     Text(
                         text = "Thông tin liên lạc",
-                        style = MaterialTheme.typography.headlineMedium,
+                        fontSize = 18.sp,
+                        lineHeight = 24.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.Black
                     )
@@ -177,7 +180,8 @@ fun PersonalInfoScreen(
 
                     Text(
                         text = "Chỗ nghỉ hoặc nhà cung cấp dịch vụ mà bạn đặt sẽ sử dụng thông tin này nếu họ cần liên hệ bạn.",
-                        style = MaterialTheme.typography.bodyLarge,
+                        fontSize = 14.sp,
+                        lineHeight = 21.sp,
                         color = Color(0xFF555555)
                     )
 
@@ -202,12 +206,6 @@ fun PersonalInfoScreen(
                         colors = CardDefaults.cardColors(containerColor = Color.White),
                         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                     ) {
-                        Text(
-                            text = "Bạn không truy cập được email? Nếu đã thêm số điện thoại di động cho đợt lưu trú đã hoàn tất trước đây, bạn có thể tiến hành xác thực số điện thoại di động để đổi địa chỉ email.",
-                            modifier = Modifier.padding(16.dp),
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color(0xFF444444)
-                        )
                     }
                 }
             }
@@ -243,7 +241,8 @@ private fun PersonalInfoTopBar(
 
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineSmall,
+            fontSize = 18.sp,
+            lineHeight = 24.sp,
             color = Color.White,
             fontWeight = FontWeight.SemiBold
         )
@@ -269,7 +268,9 @@ private fun PersonalInfoRow(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.headlineSmall,
+                fontSize = 15.sp,
+                lineHeight = 22.sp,
+                fontWeight = FontWeight.Medium,
                 color = Color.Black,
                 modifier = Modifier.weight(1f)
             )
@@ -286,7 +287,8 @@ private fun PersonalInfoRow(
         if (value.isNotBlank()) {
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodyLarge,
+                fontSize = 14.sp,
+                lineHeight = 20.sp,
                 color = valueColor
             )
         }
@@ -313,7 +315,9 @@ private fun ContactInfoRow(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.headlineSmall,
+                fontSize = 15.sp,
+                lineHeight = 22.sp,
+                fontWeight = FontWeight.Medium,
                 color = Color.Black,
                 modifier = Modifier.weight(1f)
             )
@@ -330,7 +334,9 @@ private fun ContactInfoRow(
 
             Text(
                 text = value,
-                style = MaterialTheme.typography.headlineSmall,
+                fontSize = 15.sp,
+                lineHeight = 22.sp,
+                fontWeight = FontWeight.Medium,
                 color = Color.Black
             )
 
@@ -340,14 +346,16 @@ private fun ContactInfoRow(
                 modifier = Modifier
                     .background(
                         color = Color(0xFF16A34A),
-                        shape = MaterialTheme.shapes.small
+                        shape = androidx.compose.foundation.shape.RoundedCornerShape(6.dp)
                     )
                     .padding(horizontal = 10.dp, vertical = 6.dp)
             ) {
                 Text(
                     text = badgeText,
                     color = Color.White,
-                    style = MaterialTheme.typography.bodyMedium
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
@@ -358,7 +366,8 @@ private fun ContactInfoRow(
 
         Text(
             text = description,
-            style = MaterialTheme.typography.bodyLarge,
+            fontSize = 14.sp,
+            lineHeight = 21.sp,
             color = Color(0xFF555555)
         )
     }

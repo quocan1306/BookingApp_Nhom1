@@ -1,4 +1,5 @@
 package com.tranphanquocan.bookingks.ui.screen.register
+import android.widget.Toast
 import com.tranphanquocan.bookingks.ui.theme.*
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
@@ -21,13 +22,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import com.tranphanquocan.bookingks.ui.state.UserState
+import com.tranphanquocan.bookingks.viewmodel.AuthViewModel
 
 @Composable
 fun RegisterScreen(
     onBackToLogin: () -> Unit,
-    onBackToHome: () -> Unit
-
+    onBackToHome: () -> Unit,
+    navController: NavController,
+    viewModel: AuthViewModel
 ) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -100,11 +105,41 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            val context = LocalContext.current
             Button(
                 onClick = {
-                    UserState.userName.value = name
-                    UserState.isLoggedIn.value = true
-                    onBackToLogin()
+
+                    if (name.isBlank() || email.isBlank() || password.isBlank()) {
+                        Toast.makeText(context, "Không được để trống", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                        Toast.makeText(context, "Email không hợp lệ", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if (password.length < 6) {
+                        Toast.makeText(context, "Mật khẩu phải >= 6 ký tự", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    if (password != confirm) {
+                        Toast.makeText(context, "Mật khẩu không khớp", Toast.LENGTH_SHORT).show()
+                        return@Button
+                    }
+
+                    viewModel.register(email, password, name) {
+                        if (it) {
+                            Toast.makeText(context, "Đăng ký thành công", Toast.LENGTH_SHORT).show()
+
+                            navController.navigate("login") {
+                                popUpTo("register") { inclusive = true }
+                            }
+                        } else {
+                            Toast.makeText(context, "Đăng ký thất bại", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
@@ -113,6 +148,7 @@ fun RegisterScreen(
             ) {
                 Text("Đăng ký")
             }
+
 
         }
 

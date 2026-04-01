@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tranphanquocan.bookingks.ui.state.UserState
+import com.tranphanquocan.bookingks.ui.theme.ButtonBlue
 import com.tranphanquocan.bookingks.ui.theme.LightGray
 import com.tranphanquocan.bookingks.ui.theme.PrimaryBlue
 
@@ -68,7 +70,11 @@ fun CompanionsScreen(
                     onClick = {
                         navController.navigate("add_edit_companion")
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = ButtonBlue,
+                        contentColor = Color.White
+                    )
                 ) {
                     Text(
                         text = "Thêm người đi cùng",
@@ -82,7 +88,10 @@ fun CompanionsScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding(), bottom = innerPadding.calculateBottomPadding())
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
                     .background(LightGray),
                 contentAlignment = Alignment.Center
             ) {
@@ -96,7 +105,10 @@ fun CompanionsScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = innerPadding.calculateTopPadding(), bottom = innerPadding.calculateBottomPadding())
+                    .padding(
+                        top = innerPadding.calculateTopPadding(),
+                        bottom = innerPadding.calculateBottomPadding()
+                    )
                     .background(Color.White),
                 verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {

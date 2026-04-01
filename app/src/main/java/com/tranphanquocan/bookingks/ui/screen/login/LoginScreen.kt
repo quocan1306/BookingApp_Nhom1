@@ -130,7 +130,7 @@ fun LoginScreen(
                 "Đăng ký",
                 color = Color.Yellow,
                 modifier = Modifier.clickable {
-//                    onNavigateToRegister()
+                    onNavigateToRegister()
                 }
             )
         }
